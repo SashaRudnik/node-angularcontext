@@ -1,8 +1,10 @@
 'use strict';
 
-// This is just a basic test that we can even import the module.
-exports.testRequire = function (test) {
-    var angularcontext = require('../lib/main.js');
-    test.ok(angularcontext, 'angularcontext is truthy');
-    test.done();
-};
+const test = require('node:test');
+const assert = require('node:assert');
+
+const angularcontext = require('../lib/main.js');
+
+test('module can be required', () => {
+    assert.ok(angularcontext, 'angularcontext is truthy');
+});

@@ -1,22 +1,38 @@
 'use strict';
 
-var angularcontext = require('../lib/main.js');
+const test = require('node:test');
+const assert = require('node:assert');
 
-// This is just a basic test that we can even import the module.
-exports.testGetInjector = function (test) {
-    var context = angularcontext.Context();
+const angularcontext = require('../lib/main.js');
 
-    context.runFile(
-        'res/fakeangular.js',
-        function (result, error) {
-			var injector = context.injector(['ng']);
+async function loadFakeAngular(context) {
+    return new Promise((resolve, reject) => {
+        context.runFile(
+            'res/fakeangular.js',
+            function (result, error) {
+                if (error) {
+                    reject(error);
+                }
+                else {
+                    resolve(result);
+                }
+            }
+        );
+    });
+}
 
-            test.ok(injector, 'injector was returned');
+test('injector provides fake services', async () => {
+    const context = angularcontext.Context();
+    try {
+        await loadFakeAngular(context);
+        const injector = context.injector(['ng']);
 
-            var fake = injector.get('anything');
-            test.ok(fake.fake, 'injector is fake');
+        assert.ok(injector, 'injector was returned');
 
-            test.done();
-        }
-    );
-};
+        const fake = injector.get('anything');
+        assert.ok(fake.fake, 'injector returns fake dependency');
+    }
+    finally {
+        context.dispose();
+    }
+});

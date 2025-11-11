@@ -1,32 +1,26 @@
 'use strict';
 
-var angularcontext = require('../lib/main.js');
+const test = require('node:test');
+const assert = require('node:assert');
 
-// This is just a basic test that we can even import the module.
-exports.testOnDispose = function (test) {
-    test.expect(2);
-    var context = angularcontext.Context();
+const angularcontext = require('../lib/main.js');
 
-    var testsDone = 0;
-    function oneTestDone() {
-        testsDone++;
-        if (testsDone === 2) {
-            test.done();
-        }
-    }
+test('onDispose callbacks are invoked with context', () => {
+    const context = angularcontext.Context();
+    let callbacks = 0;
+    let passedContext;
 
-    context.onDispose(
-        function (passedInContext) {
-            test.ok(context === passedInContext, 'onDispose callback gets the context as a param');
-            oneTestDone();
-        }
-    );
-    context.onDispose(
-        function () {
-            test.ok(true, 'the second callback was called too');
-            oneTestDone();
-        }
-    );
+    context.onDispose((ctx) => {
+        callbacks++;
+        passedContext = ctx;
+    });
+
+    context.onDispose(() => {
+        callbacks++;
+    });
 
     context.dispose();
-};
+
+    assert.strictEqual(passedContext, context, 'onDispose receives context instance');
+    assert.strictEqual(callbacks, 2, 'both callbacks were invoked');
+});
