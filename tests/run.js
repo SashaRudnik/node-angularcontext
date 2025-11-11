@@ -1,19 +1,32 @@
 'use strict';
 
-var angularcontext = require('../lib/main.js');
+const test = require('node:test');
+const assert = require('node:assert');
 
-// This is just a basic test that we can even import the module.
-exports.testRunFile = function (test) {
-    var context = angularcontext.Context();
+const angularcontext = require('../lib/main.js');
 
-    context.runFile(
-        'res/fakeangular.js',
-        function (result, error) {
-            test.ifError(error, 'Run file returned error');
+async function runFile(context, fileName) {
+    return new Promise((resolve, reject) => {
+        context.runFile(
+            fileName,
+            function (result, error) {
+                if (error) {
+                    reject(error);
+                }
+                else {
+                    resolve(result);
+                }
+            }
+        );
+    });
+}
 
-            test.ok(result, 'runFile returned a result');
-
-            test.done();
-        }
-    );
-};
+test('runFile executes file without error', async () => {
+    const context = angularcontext.Context();
+    try {
+        await assert.doesNotReject(() => runFile(context, 'res/fakeangular.js'));
+    }
+    finally {
+        context.dispose();
+    }
+});

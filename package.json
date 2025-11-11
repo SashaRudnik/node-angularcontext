@@ -12,7 +12,7 @@
     },
     "main": "./lib/main",
     "scripts": {
-        "test": "nodeunit tests/",
+        "test": "node --test tests/injector.js tests/on_dispose.js tests/require.js tests/run.js",
         "lint": "jshint -c .jshintrc lib/* tests/*"
     },
     "licenses": [
@@ -22,16 +22,15 @@
         }
     ],
     "dependencies": {
-        "jsdom": "~11.11.0"
+        "jsdom": "^24.0.0"
     },
     "devDependencies": {
-        "nodeunit": "*",
-        "jshint": "2.1.11"
+        "jshint": "^2.13.6"
     },
     "optionalDependencies": {
         "angular": "*"
     },
     "engines": {
-        "node": ">= 6.0.0"
+        "node": ">= 18.0.0"
     }
 }
